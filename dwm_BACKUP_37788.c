@@ -135,10 +135,14 @@ struct Monitor {
 	int by;               /* bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
+<<<<<<< HEAD
+	int gappx;            /* gaps between windows */
+=======
 	int gappih;           /* horizontal gap between windows */
 	int gappiv;           /* vertical gap between windows */
 	int gappoh;           /* horizontal outer gaps */
 	int gappov;           /* vertical outer gaps */
+>>>>>>> master
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
@@ -245,6 +249,8 @@ static void setmfact(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
+<<<<<<< HEAD
+=======
 static void sigchld(int unused);
 #ifndef __OpenBSD__
 static int getdwmblockspid();
@@ -252,10 +258,15 @@ static void sigdwmblocks(const Arg *arg);
 #endif
 static void sighup(int unused);
 static void sigterm(int unused);
+>>>>>>> master
 static void spawn(const Arg *arg);
 static int stackpos(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+<<<<<<< HEAD
+static void tile(Monitor *m);
+=======
+>>>>>>> master
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
@@ -577,7 +588,11 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
+<<<<<<< HEAD
+		else if (ev->x > selmon->ww - (int)TEXTW(stext))
+=======
 		else if (ev->x > (x = selmon->ww - (int)TEXTW(stext) + lrpad)) {
+>>>>>>> master
 			click = ClkStatusText;
 
 			char *text = rawstext;
@@ -807,10 +822,14 @@ createmon(void)
 	m->nmaster = nmaster;
 	m->showbar = showbar;
 	m->topbar = topbar;
+<<<<<<< HEAD
+	m->gappx = gappx;
+=======
 	m->gappih = gappih;
 	m->gappiv = gappiv;
 	m->gappoh = gappoh;
 	m->gappov = gappov;
+>>>>>>> master
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -877,7 +896,11 @@ drawbar(Monitor *m)
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
 
+<<<<<<< HEAD
+	if (!m->showbar)
+=======
 	if(!m->showbar)
+>>>>>>> master
 		return;
 
 	/* draw status first so it can be overdrawn by tags later */
@@ -1019,7 +1042,11 @@ focusstack(const Arg *arg)
 	int i = stackpos(arg);
 	Client *c, *p;
 
+<<<<<<< HEAD
+	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
+=======
 	if(i < 0 || !selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
+>>>>>>> master
 		return;
 
 	for(p = NULL, c = selmon->clients; c && (i || !ISVISIBLE(c));
@@ -1933,6 +1960,27 @@ showhide(Client *c)
 }
 
 void
+<<<<<<< HEAD
+spawn(const Arg *arg)
+{
+	struct sigaction sa;
+
+	if (arg->v == dmenucmd)
+		dmenumon[0] = '0' + selmon->num;
+	if (fork() == 0) {
+		if (dpy)
+			close(ConnectionNumber(dpy));
+		setsid();
+
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
+		sa.sa_handler = SIG_DFL;
+		sigaction(SIGCHLD, &sa, NULL);
+
+		execvp(((char **)arg->v)[0], (char **)arg->v);
+		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
+	}
+=======
 sighup(int unused)
 {
 	Arg a = {.i = 1};
@@ -1987,6 +2035,7 @@ setclienttagprop(Client *c)
 	long data[] = { (long) c->tags, (long) c->mon->num };
 	XChangeProperty(dpy, c->win, netatom[NetClientInfo], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) data, 2);
+>>>>>>> master
 }
 
 void
@@ -2011,6 +2060,37 @@ tagmon(const Arg *arg)
 }
 
 void
+<<<<<<< HEAD
+tile(Monitor *m)
+{
+	unsigned int i, n, h, mw, my, ty;
+	Client *c;
+
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (n == 0)
+		return;
+
+	if (n > m->nmaster)
+		mw = m->nmaster ? m->ww * m->mfact : 0;
+	else
+		mw = m->ww - m->gappx;
+	for (i = 0, my = ty = m->gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+			if (i < m->nmaster) {
+			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
+			resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
+			if (my + HEIGHT(c) + m->gappx < m->wh)
+				my += HEIGHT(c) + m->gappx;
+		} else {
+			h = (m->wh - ty) / (n - i) - m->gappx;
+			resize(c, m->wx + mw + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
+			if (ty + HEIGHT(c) + m->gappx < m->wh)
+				ty += HEIGHT(c) + m->gappx;
+		}
+}
+
+void
+=======
+>>>>>>> master
 togglebar(const Arg *arg)
 {
 	selmon->showbar = !selmon->showbar;
